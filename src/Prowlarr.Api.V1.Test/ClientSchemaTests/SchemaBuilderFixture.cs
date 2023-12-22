@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using NzbDrone.Core.Annotations;
+using NzbDrone.Core.Authentication;
+using NzbDrone.Core.Configuration;
 using NzbDrone.Test.Common;
 using Prowlarr.Http.ClientSchema;
 
@@ -9,6 +11,16 @@ namespace NzbDrone.Api.Test.ClientSchemaTests
     [TestFixture]
     public class SchemaBuilderFixture : TestBase
     {
+        [SetUp]
+        public void Setup()
+        {
+            Mocker.GetMock<IConfigFileProvider>()
+                .SetupGet(s => s.AuthenticationMethod)
+                .Returns(AuthenticationType.None);
+
+            SchemaBuilder.Initialize(Mocker.Container);
+        }
+
         [Test]
         public void should_return_field_for_every_property()
         {

@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using DryIoc;
 using NzbDrone.Common.EnsureThat;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Reflection;
 using NzbDrone.Common.Serializer;
 using NzbDrone.Core.Annotations;
+using NzbDrone.Core.Authentication;
+using NzbDrone.Core.Configuration;
 
 namespace Prowlarr.Http.ClientSchema
 {
@@ -15,6 +18,12 @@ namespace Prowlarr.Http.ClientSchema
     {
         private const string PRIVATE_VALUE = "********";
         private static Dictionary<Type, FieldMapping[]> _mappings = new Dictionary<Type, FieldMapping[]>();
+        private static IConfigFileProvider _configFileProvider;
+
+        public static void Initialize(IContainer container)
+        {
+            _configFileProvider = container.Resolve<IConfigFileProvider>();
+        }
 
         public static List<Field> ToSchema(object model)
         {
@@ -29,7 +38,8 @@ namespace Prowlarr.Http.ClientSchema
                 var field = mapping.Field.Clone();
                 field.Value = mapping.GetterFunc(model);
 
-                if (field.Value != null && !field.Value.Equals(string.Empty) &&
+                if (_configFileProvider.AuthenticationMethod is AuthenticationType.None or AuthenticationType.External &&
+                    field.Value != null && !field.Value.Equals(string.Empty) &&
                     (field.Privacy == PrivacyLevel.ApiKey || field.Privacy == PrivacyLevel.Password))
                 {
                     field.Value = PRIVATE_VALUE;
@@ -57,7 +67,8 @@ namespace Prowlarr.Http.ClientSchema
                 if (field != null)
                 {
                     // Use the Privacy property from the mapping's field as Privacy may not be set in the API request (nor is it required)
-                    if ((mapping.Field.Privacy == PrivacyLevel.ApiKey || mapping.Field.Privacy == PrivacyLevel.Password) &&
+                    if (_configFileProvider.AuthenticationMethod is AuthenticationType.None or AuthenticationType.External &&
+                        (mapping.Field.Privacy == PrivacyLevel.ApiKey || mapping.Field.Privacy == PrivacyLevel.Password) &&
                         (field.Value?.ToString()?.Equals(PRIVATE_VALUE) ?? false) &&
                         model != null)
                     {
