@@ -29,7 +29,7 @@
     "OnHealthIssueHelpText": "健康問題について",
     "Priority": "優先",
     "Restart": "再起動",
-    "RSSIsNotSupportedWithThisIndexer": "RSSはこのインデクサーではサポートされていません",
+    "RssIsNotSupportedWithThisIndexer": "RSSはこのインデクサーではサポートされていません",
     "ShowSearch": "検索を表示",
     "SSLPort": "SSLポート",
     "StartupDirectory": "スタートアップディレクトリ",
@@ -100,7 +100,7 @@
     "TagCannotBeDeletedWhileInUse": "使用中は削除できません",
     "TagIsNotUsedAndCanBeDeleted": "タグは使用されておらず、削除できます",
     "TestAll": "すべてテスト",
-    "UnableToLoadDownloadClients": "ダウンロードクライアントを読み込めません",
+    "DownloadClientsLoadError": "ダウンロードクライアントを読み込めません",
     "UnableToLoadGeneralSettings": "一般設定を読み込めません",
     "UpdateAutomaticallyHelpText": "アップデートを自動的にダウンロードしてインストールします。 System：Updatesから引き続きインストールできます。",
     "Updates": "更新",
@@ -141,7 +141,7 @@
     "UI": "UI",
     "CouldNotConnectSignalR": "SignalRに接続できませんでした。UIは更新されません",
     "Custom": "カスタム",
-    "DBMigration": "DB移行",
+    "DatabaseMigration": "DB移行",
     "Delete": "削除",
     "DeleteApplicationMessageText": "通知「{0}」を削除してもよろしいですか？",
     "DeleteBackup": "バックアップを削除する",
@@ -182,7 +182,7 @@
     "RestartNow": "今すぐ再起動",
     "Result": "結果",
     "Retention": "保持",
-    "RSS": "RSS",
+    "Rss": "RSS",
     "Save": "保存する",
     "SaveChanges": "変更内容を保存",
     "Scheduled": "予定",
@@ -352,5 +352,6 @@
     "AuthForm": "フォーム（ログインページ）",
     "DisabledForLocalAddresses": "ローカルアドレスでは無効",
     "None": "なし",
-    "ResetAPIKeyMessageText": "APIキーをリセットしてもよろしいですか？"
+    "ResetAPIKeyMessageText": "APIキーをリセットしてもよろしいですか？",
+    "RestartProwlarr": "{appName}を再起動します"
 }

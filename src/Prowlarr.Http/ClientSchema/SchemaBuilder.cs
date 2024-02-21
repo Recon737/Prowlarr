@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using DryIoc;
 using NzbDrone.Common.EnsureThat;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Reflection;
 using NzbDrone.Common.Serializer;
 using NzbDrone.Core.Annotations;
+using NzbDrone.Core.Localization;
 
 namespace Prowlarr.Http.ClientSchema
 {
     public static class SchemaBuilder
     {
+        private const string PRIVATE_VALUE = "********";
         private static Dictionary<Type, FieldMapping[]> _mappings = new Dictionary<Type, FieldMapping[]>();
+        private static ILocalizationService _localizationService;
+
+        public static void Initialize(IContainer container)
+        {
+            _localizationService = container.Resolve<ILocalizationService>();
+        }
 
         public static List<Field> ToSchema(object model)
         {
@@ -28,13 +37,19 @@ namespace Prowlarr.Http.ClientSchema
                 var field = mapping.Field.Clone();
                 field.Value = mapping.GetterFunc(model);
 
+                if (field.Value != null && !field.Value.Equals(string.Empty) &&
+                    (field.Privacy == PrivacyLevel.ApiKey || field.Privacy == PrivacyLevel.Password))
+                {
+                    field.Value = PRIVATE_VALUE;
+                }
+
                 result.Add(field);
             }
 
             return result.OrderBy(r => r.Order).ToList();
         }
 
-        public static object ReadFromSchema(List<Field> fields, Type targetType)
+        public static object ReadFromSchema(List<Field> fields, Type targetType, object model)
         {
             Ensure.That(targetType, () => targetType).IsNotNull();
 
@@ -49,16 +64,23 @@ namespace Prowlarr.Http.ClientSchema
 
                 if (field != null)
                 {
-                    mapping.SetterFunc(target, field.Value);
+                    // Use the Privacy property from the mapping's field as Privacy may not be set in the API request (nor is it required)
+                    if ((mapping.Field.Privacy == PrivacyLevel.ApiKey || mapping.Field.Privacy == PrivacyLevel.Password) &&
+                        (field.Value?.ToString()?.Equals(PRIVATE_VALUE) ?? false) &&
+                        model != null)
+                    {
+                        var existingValue = mapping.GetterFunc(model);
+
+                        mapping.SetterFunc(target, existingValue);
+                    }
+                    else
+                    {
+                        mapping.SetterFunc(target, field.Value);
+                    }
                 }
             }
 
             return target;
-        }
-
-        public static T ReadFromSchema<T>(List<Field> fields)
-        {
-            return (T)ReadFromSchema(fields, typeof(T));
         }
 
         // Ideally this function should begin a System.Linq.Expression expression tree since it's faster.
@@ -93,18 +115,33 @@ namespace Prowlarr.Http.ClientSchema
                 if (propertyInfo.PropertyType.IsSimpleType())
                 {
                     var fieldAttribute = property.Item2;
+
+                    var label = fieldAttribute.Label.IsNotNullOrWhiteSpace()
+                        ? _localizationService.GetLocalizedString(fieldAttribute.Label,
+                            GetTokens(type, fieldAttribute.Label, TokenField.Label))
+                        : fieldAttribute.Label;
+                    var helpText = fieldAttribute.HelpText.IsNotNullOrWhiteSpace()
+                        ? _localizationService.GetLocalizedString(fieldAttribute.HelpText,
+                            GetTokens(type, fieldAttribute.Label, TokenField.HelpText))
+                        : fieldAttribute.HelpText;
+                    var helpTextWarning = fieldAttribute.HelpTextWarning.IsNotNullOrWhiteSpace()
+                        ? _localizationService.GetLocalizedString(fieldAttribute.HelpTextWarning,
+                            GetTokens(type, fieldAttribute.Label, TokenField.HelpTextWarning))
+                        : fieldAttribute.HelpTextWarning;
+
                     var field = new Field
                     {
                         Name = prefix + GetCamelCaseName(propertyInfo.Name),
-                        Label = fieldAttribute.Label,
+                        Label = label,
                         Unit = fieldAttribute.Unit,
-                        HelpText = fieldAttribute.HelpText,
-                        HelpTextWarning = fieldAttribute.HelpTextWarning,
+                        HelpText = helpText,
+                        HelpTextWarning = helpTextWarning,
                         HelpLink = fieldAttribute.HelpLink,
                         Order = fieldAttribute.Order,
                         Advanced = fieldAttribute.Advanced,
                         Type = fieldAttribute.Type.ToString().FirstCharToLower(),
                         Section = fieldAttribute.Section,
+                        Privacy = fieldAttribute.Privacy,
                         Placeholder = fieldAttribute.Placeholder
                     };
 
@@ -137,7 +174,7 @@ namespace Prowlarr.Http.ClientSchema
                         Field = field,
                         PropertyType = propertyInfo.PropertyType,
                         GetterFunc = t => propertyInfo.GetValue(targetSelector(t), null),
-                        SetterFunc = (t, v) => propertyInfo.SetValue(targetSelector(t), valueConverter(v), null)
+                        SetterFunc = (t, v) => propertyInfo.SetValue(targetSelector(t), v?.GetType() == propertyInfo.PropertyType ? v : valueConverter(v), null)
                     });
                 }
                 else
@@ -156,6 +193,24 @@ namespace Prowlarr.Http.ClientSchema
                 .Where(v => v.Item2 != null)
                 .OrderBy(v => v.Item2.Order)
                 .ToArray();
+        }
+
+        private static Dictionary<string, object> GetTokens(Type type, string label, TokenField field)
+        {
+            var tokens = new Dictionary<string, object>();
+
+            foreach (var propertyInfo in type.GetProperties())
+            {
+                foreach (var attribute in propertyInfo.GetCustomAttributes(true))
+                {
+                    if (attribute is FieldTokenAttribute fieldTokenAttribute && fieldTokenAttribute.Field == field && fieldTokenAttribute.Label == label)
+                    {
+                        tokens.Add(fieldTokenAttribute.Token, fieldTokenAttribute.Value);
+                    }
+                }
+            }
+
+            return tokens;
         }
 
         private static List<SelectOption> GetSelectOptions(Type selectOptions)

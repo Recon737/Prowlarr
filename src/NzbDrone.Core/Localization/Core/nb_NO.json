@@ -1,5 +1,5 @@
 {
-    "Add": "Legge til",
+    "Add": "Legg til",
     "AddDownloadClient": "Legg til nedlastingsklient",
     "Added": "La til",
     "AddingTag": "Legger til tag",
@@ -54,7 +54,7 @@
     "UI": "Grensesnitt",
     "ConnectionLost": "Tilkobling mistet",
     "New": "Ny",
-    "RSS": "RSS",
+    "Rss": "RSS",
     "Applications": "Applikasjoner",
     "Connections": "Tilkoblinger",
     "Usenet": "Usenet",
@@ -135,5 +135,7 @@
     "AuthBasic": "Grunnleggende (nettleser -popup)",
     "AuthForm": "Skjemaer (påloggingsside)",
     "DisabledForLocalAddresses": "Deaktivert for lokale adresser",
-    "ResetAPIKeyMessageText": "Er du sikker på at du vil tilbakestille API -nøkkelen din?"
+    "ResetAPIKeyMessageText": "Er du sikker på at du vil tilbakestille API -nøkkelen din?",
+    "CountApplicationsSelected": "{count} samling(er) valgt",
+    "Id": "ID"
 }

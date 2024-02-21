@@ -38,11 +38,17 @@ export const defaultState = {
       isModifiable: false
     },
     {
+      name: 'id',
+      columnLabel: () => translate('IndexerId'),
+      label: () => translate('Id'),
+      isSortable: true,
+      isVisible: false
+    },
+    {
       name: 'sortName',
       label: () => translate('IndexerName'),
       isSortable: true,
-      isVisible: true,
-      isModifiable: false
+      isVisible: true
     },
     {
       name: 'protocol',
@@ -179,6 +185,12 @@ export const defaultState = {
       label: () => translate('SyncProfile'),
       type: filterBuilderTypes.EXACT,
       valueType: filterBuilderValueTypes.APP_PROFILE
+    },
+    {
+      name: 'categories',
+      label: () => translate('Categories'),
+      type: filterBuilderTypes.ARRAY,
+      valueType: filterBuilderValueTypes.CATEGORY
     },
     {
       name: 'tags',

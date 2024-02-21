@@ -22,15 +22,14 @@ namespace Prowlarr.Api.V1.History
 
         [HttpGet]
         [Produces("application/json")]
-        public PagingResource<HistoryResource> GetHistory([FromQuery] PagingRequestResource paging, int? eventType, bool? successful, string downloadId)
+        public PagingResource<HistoryResource> GetHistory([FromQuery] PagingRequestResource paging, [FromQuery(Name = "eventType")] int[] eventTypes, bool? successful, string downloadId, [FromQuery] int[] indexerIds = null)
         {
             var pagingResource = new PagingResource<HistoryResource>(paging);
             var pagingSpec = pagingResource.MapToPagingSpec<HistoryResource, NzbDrone.Core.History.History>("date", SortDirection.Descending);
 
-            if (eventType.HasValue)
+            if (eventTypes != null && eventTypes.Any())
             {
-                var filterValue = (HistoryEventType)eventType.Value;
-                pagingSpec.FilterExpressions.Add(v => v.EventType == filterValue);
+                pagingSpec.FilterExpressions.Add(v => eventTypes.Contains((int)v.EventType));
             }
 
             if (successful.HasValue)
@@ -44,7 +43,12 @@ namespace Prowlarr.Api.V1.History
                 pagingSpec.FilterExpressions.Add(h => h.DownloadId == downloadId);
             }
 
-            return pagingSpec.ApplyToPage(_historyService.Paged, MapToResource);
+            if (indexerIds != null && indexerIds.Any())
+            {
+                pagingSpec.FilterExpressions.Add(h => indexerIds.Contains(h.IndexerId));
+            }
+
+            return pagingSpec.ApplyToPage(h => _historyService.Paged(pagingSpec), MapToResource);
         }
 
         [HttpGet("since")]

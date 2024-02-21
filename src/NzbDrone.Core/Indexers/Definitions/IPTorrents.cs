@@ -255,7 +255,14 @@ namespace NzbDrone.Core.Indexers.Definitions
         {
             var pageableRequests = new IndexerPageableRequestChain();
 
-            pageableRequests.Add(GetPagedRequests($"{searchCriteria.SanitizedTvSearchString}", searchCriteria, searchCriteria.FullImdbId));
+            var searchTerm = $"{searchCriteria.SanitizedTvSearchString}";
+
+            if (searchCriteria.Season > 0 && searchCriteria.Episode.IsNullOrWhiteSpace())
+            {
+                searchTerm += "*";
+            }
+
+            pageableRequests.Add(GetPagedRequests(searchTerm.Trim(), searchCriteria, searchCriteria.FullImdbId));
 
             return pageableRequests;
         }
@@ -413,10 +420,10 @@ namespace NzbDrone.Core.Indexers.Definitions
     {
         private static readonly IPTorrentsValidator Validator = new ();
 
-        [FieldDefinition(3, Label = "Cookie User-Agent", Type = FieldType.Textbox, HelpText = "User-Agent associated with cookie used from Browser")]
+        [FieldDefinition(3, Label = "IndexerIPTorrentsSettingsCookieUserAgent", Type = FieldType.Textbox, HelpText = "IndexerIPTorrentsSettingsCookieUserAgentHelpText")]
         public string UserAgent { get; set; }
 
-        [FieldDefinition(4, Label = "FreeLeech Only", Type = FieldType.Checkbox, HelpText = "Search FreeLeech torrents only")]
+        [FieldDefinition(4, Label = "IndexerSettingsFreeleechOnly", Type = FieldType.Checkbox, HelpText = "IndexerIPTorrentsSettingsFreeleechOnlyHelpText")]
         public bool FreeLeechOnly { get; set; }
 
         public override NzbDroneValidationResult Validate()

@@ -1468,8 +1468,11 @@
             "name": "eventType",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
             }
           },
           {
@@ -1484,6 +1487,17 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "indexerIds",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
             }
           }
         ],
@@ -3999,10 +4013,10 @@
           "enableRss": {
             "type": "boolean"
           },
-          "enableInteractiveSearch": {
+          "enableAutomaticSearch": {
             "type": "boolean"
           },
-          "enableAutomaticSearch": {
+          "enableInteractiveSearch": {
             "type": "boolean"
           },
           "minimumSeeders": {
@@ -4614,6 +4628,9 @@
           "hidden": {
             "type": "string",
             "nullable": true
+          },
+          "privacy": {
+            "$ref": "#/components/schemas/PrivacyLevel"
           },
           "placeholder": {
             "type": "string",
@@ -5660,6 +5677,15 @@
           }
         },
         "additionalProperties": false
+      },
+      "PrivacyLevel": {
+        "enum": [
+          "normal",
+          "password",
+          "apiKey",
+          "userName"
+        ],
+        "type": "string"
       },
       "ProviderMessage": {
         "type": "object",

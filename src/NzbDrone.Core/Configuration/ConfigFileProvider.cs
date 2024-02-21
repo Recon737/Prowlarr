@@ -227,7 +227,7 @@ namespace NzbDrone.Core.Configuration
                     return urlBase;
                 }
 
-                return "/" + urlBase.Trim('/').ToLower();
+                return "/" + urlBase;
             }
         }
 
@@ -332,8 +332,8 @@ namespace NzbDrone.Core.Configuration
                 return;
             }
 
-            // If SSL is enabled and a cert hash is still in the config file disable SSL
-            if (EnableSsl && GetValue("SslCertHash", null).IsNotNullOrWhiteSpace())
+            // If SSL is enabled and a cert hash is still in the config file or cert path is empty disable SSL
+            if (EnableSsl && (GetValue("SslCertHash", null).IsNotNullOrWhiteSpace() || SslCertPath.IsNullOrWhiteSpace()))
             {
                 SetValue("EnableSsl", false);
             }

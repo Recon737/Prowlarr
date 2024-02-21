@@ -26,7 +26,7 @@
     "Connections": "연결",
     "CouldNotConnectSignalR": "SignalR에 연결할 수 없습니다. UI가 업데이트되지 않습니다.",
     "Custom": "사용자 지정",
-    "DBMigration": "DB 마이그레이션",
+    "DatabaseMigration": "DB 마이그레이션",
     "DeleteBackupMessageText": "백업 '{0}'을(를) 삭제하시겠습니까?",
     "BackupNow": "지금 백업",
     "Authentication": "인증",
@@ -142,7 +142,7 @@
     "Restore": "복원",
     "Result": "결과",
     "Retention": "보유",
-    "RSSIsNotSupportedWithThisIndexer": "이 인덱서에서는 RSS가 지원되지 않습니다.",
+    "RssIsNotSupportedWithThisIndexer": "이 인덱서에서는 RSS가 지원되지 않습니다.",
     "Scheduled": "예정",
     "ScriptPath": "스크립트 경로",
     "Search": "검색",
@@ -160,7 +160,7 @@
     "Title": "표제",
     "Today": "오늘",
     "UILanguageHelpTextWarning": "브라우저 새로 고침 필요",
-    "UnableToLoadDownloadClients": "다운로드 클라이언트를로드 할 수 없습니다.",
+    "DownloadClientsLoadError": "다운로드 클라이언트를로드 할 수 없습니다.",
     "UnableToLoadHistory": "기록을로드 할 수 없습니다.",
     "UnableToLoadTags": "태그를로드 할 수 없습니다.",
     "UnableToLoadUISettings": "UI 설정을로드 할 수 없습니다.",
@@ -258,7 +258,7 @@
     "ProxyCheckBadRequestMessage": "프록시를 테스트하지 못했습니다. StatusCode : {0}",
     "ProxyCheckFailedToTestMessage": "프록시 테스트 실패 : {0}",
     "ReleaseStatus": "출시 상태",
-    "RSS": "RSS",
+    "Rss": "RSS",
     "Sort": "종류",
     "UnsavedChanges": "저장되지 않은 변경 사항",
     "UnselectAll": "모두 선택 해제",
@@ -352,5 +352,6 @@
     "DisabledForLocalAddresses": "로컬 주소에 대해 비활성화됨",
     "None": "없음",
     "ResetAPIKeyMessageText": "API 키를 재설정하시겠습니까?",
-    "StopSelecting": "선택 취소"
+    "StopSelecting": "선택 취소",
+    "RestartProwlarr": "{appName} 다시 시작"
 }

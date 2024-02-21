@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Http;
@@ -26,7 +27,7 @@ namespace NzbDrone.Core.Indexers.Definitions.HDBits
 
             if (imdbId == 0 && searchCriteria.SearchTerm.IsNotNullOrWhiteSpace())
             {
-                query.Search = searchCriteria.SanitizedSearchTerm;
+                query.Search = Regex.Replace(searchCriteria.SanitizedSearchTerm, "[\\W]+", " ").Trim();
             }
 
             if (imdbId != 0)
@@ -122,8 +123,20 @@ namespace NzbDrone.Core.Indexers.Definitions.HDBits
             query.Username = Settings.Username;
             query.Passkey = Settings.ApiKey;
 
-            query.Codec = Settings.Codecs.ToArray();
-            query.Medium = Settings.Mediums.ToArray();
+            if (Settings.Codecs.Any())
+            {
+                query.Codec = Settings.Codecs.ToArray();
+            }
+
+            if (Settings.Mediums.Any())
+            {
+                query.Medium = Settings.Mediums.ToArray();
+            }
+
+            if (Settings.Origins.Any())
+            {
+                query.Origin = Settings.Origins.ToArray();
+            }
 
             if (searchCriteria.Categories?.Length > 0)
             {
